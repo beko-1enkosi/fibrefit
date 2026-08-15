@@ -1,0 +1,5 @@
+[
+  {"id":"report-1","area":"Midrand","issue_type":"Slow internet","network":"Vuma","isp":"Afrihost","note":"Speeds dropped this evening.","created_at":"2026-08-15T18:10:00+00:00"},
+  {"id":"report-2","area":"Midrand","issue_type":"No internet","network":"Openserve","isp":null,"note":"Connection has been down for about an hour.","created_at":"2026-08-15T17:40:00+00:00"},
+  {"id":"report-3","area":"Sandton","issue_type":"Unstable connection","network":"Vuma","isp":null,"note":"Connection keeps dropping.","created_at":"2026-08-15T16:25:00+00:00"}
+]
