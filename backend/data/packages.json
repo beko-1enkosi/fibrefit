@@ -35,9 +35,78 @@
     "reliability": 92,
     "ideal_for": ["gaming", "remote work", "streaming"]
   },
-  {"id":"sand-1","area":"Sandton","network":"Vuma","isp":"Afrihost","download_mbps":100,"upload_mbps":100,"price":779,"contract":"Month-to-month","reliability":89,"ideal_for":["streaming","remote work"]},
-  {"id":"sand-2","area":"Sandton","network":"Openserve","isp":"Axxess","download_mbps":50,"upload_mbps":25,"price":629,"contract":"Month-to-month","reliability":85,"ideal_for":["studying","browsing"]},
-  {"id":"sand-3","area":"Sandton","network":"Frogfoot","isp":"Cool Ideas","download_mbps":250,"upload_mbps":250,"price":999,"contract":"Month-to-month","reliability":93,"ideal_for":["gaming","streaming","remote work"]},
-  {"id":"cent-1","area":"Centurion","network":"Openserve","isp":"Afrihost","download_mbps":75,"upload_mbps":50,"price":699,"contract":"Month-to-month","reliability":87,"ideal_for":["studying","remote work","streaming"]},
-  {"id":"cent-2","area":"Centurion","network":"MetroFibre","isp":"Webafrica","download_mbps":150,"upload_mbps":150,"price":829,"contract":"Month-to-month","reliability":90,"ideal_for":["gaming","streaming"]}
+
+  {
+    "id": "ivory-1",
+    "area": "Ivory Park",
+    "network": "Vuma",
+    "isp": "Afrihost",
+    "download_mbps": 75,
+    "upload_mbps": 75,
+    "price": 699,
+    "contract": "Month-to-month",
+    "reliability": 88,
+    "ideal_for": ["streaming", "remote work", "studying"]
+  },
+  {
+    "id": "ivory-2",
+    "area": "Ivory Park",
+    "network": "Openserve",
+    "isp": "Axxess",
+    "download_mbps": 50,
+    "upload_mbps": 25,
+    "price": 589,
+    "contract": "Month-to-month",
+    "reliability": 84,
+    "ideal_for": ["studying", "browsing", "streaming"]
+  },
+  {
+    "id": "ivory-3",
+    "area": "Ivory Park",
+    "network": "MetroFibre",
+    "isp": "Cool Ideas",
+    "download_mbps": 150,
+    "upload_mbps": 150,
+    "price": 849,
+    "contract": "Month-to-month",
+    "reliability": 91,
+    "ideal_for": ["gaming", "remote work", "streaming"]
+  },
+
+  {
+    "id": "rabie-1",
+    "area": "Rabie Ridge",
+    "network": "Openserve",
+    "isp": "Afrihost",
+    "download_mbps": 100,
+    "upload_mbps": 50,
+    "price": 749,
+    "contract": "Month-to-month",
+    "reliability": 88,
+    "ideal_for": ["remote work", "streaming", "studying"]
+  },
+  {
+    "id": "rabie-2",
+    "area": "Rabie Ridge",
+    "network": "Vuma",
+    "isp": "Webafrica",
+    "download_mbps": 50,
+    "upload_mbps": 50,
+    "price": 599,
+    "contract": "Month-to-month",
+    "reliability": 85,
+    "ideal_for": ["browsing", "studying", "streaming"]
+  },
+  {
+    "id": "rabie-3",
+    "area": "Rabie Ridge",
+    "network": "MetroFibre",
+    "isp": "Cool Ideas",
+    "download_mbps": 200,
+    "upload_mbps": 200,
+    "price": 899,
+    "contract": "Month-to-month",
+    "reliability": 91,
+    "ideal_for": ["gaming", "remote work", "streaming"]
+  }
 ]

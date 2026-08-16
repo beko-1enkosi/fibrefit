@@ -5,11 +5,12 @@ import 'leaflet/dist/leaflet.css';
 import './styles.css';
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-const FALLBACK_AREAS = ['Tembisa', 'Sandton', 'Centurion'];
+const FALLBACK_AREAS = ['Tembisa', 'Ivory Park', 'Rabie Ridge'];
+
 const AREA_COORDS = {
   Tembisa: [-25.9964, 28.2268],
-  Sandton: [-26.1076, 28.0567],
-  Centurion: [-25.8603, 28.1894],
+  'Ivory Park': [-25.9875, 28.2039],
+  'Rabie Ridge': [-26.0227, 28.1753],
 };
 const USAGE_OPTIONS = [
   ['streaming', 'Streaming'],
@@ -89,7 +90,10 @@ function MapFocus({ center }) {
 function App() {
   const route = useRoute();
   const [areas, setAreas] = useState(FALLBACK_AREAS);
-  const [area, setArea] = useState(() => localStorage.getItem('fibrefit-area') || 'Tembisa');
+  const [area, setArea] = useState(() => {
+    const savedArea = localStorage.getItem('fibrefit-area');
+    return FALLBACK_AREAS.includes(savedArea) ? savedArea : 'Tembisa';
+  });
   const [packages, setPackages] = useState([]);
   const [reports, setReports] = useState([]);
   const [apiWarning, setApiWarning] = useState('');
@@ -103,9 +107,29 @@ function App() {
   const [currentPrice, setCurrentPrice] = useState(799);
   const [currentIsp, setCurrentIsp] = useState('');
   const [currentNetwork, setCurrentNetwork] = useState('');
-  const [results, setResults] = useState(null);
+  const [results, setResults] = useState(() => {
+    try {
+      const saved = localStorage.getItem('fibrefit-results');
+
+      return saved
+        ? JSON.parse(saved)
+        : null;
+    } catch {
+      return null;
+    }
+  });
   const [loadingResults, setLoadingResults] = useState(false);
   const [recommendationError, setRecommendationError] = useState('');
+
+  useEffect(() => {
+    try {
+      if (results) {
+        localStorage.setItem('fibrefit-results', JSON.stringify(results));
+      }
+    } catch {
+      // FibreFit still works if localStorage is unavailable.
+    }
+  }, [results]);
 
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [question, setQuestion] = useState('');
@@ -136,7 +160,14 @@ function App() {
         return response.json();
       })
       .then((data) => {
-        if (Array.isArray(data) && data.length) setAreas(data);
+        if (!Array.isArray(data)) return;
+
+        const supportedAreas = FALLBACK_AREAS.filter((item) => data.includes(item));
+        setAreas(supportedAreas.length ? supportedAreas : FALLBACK_AREAS);
+
+        if (!FALLBACK_AREAS.includes(area)) {
+          setArea('Tembisa');
+        }
       })
       .catch(() => setApiWarning('We could not reach the FibreFit API. Check that FastAPI is running.'));
   }, []);
@@ -287,7 +318,9 @@ function App() {
   else if (route === '/community') page = <CommunityPage {...shared} />;
   else if (route === '/compare') page = <ComparePage {...shared} />;
   else if (route === '/report') page = <ReportPage {...shared} />;
+  else if (route === '/contact') page = <ContactPage area={area} areas={areas} />;
   else page = <HomePage {...shared} />;
+  
 
   return (
     <div className="appShell">
@@ -322,6 +355,7 @@ function Header({ route }) {
     ['/find', 'Find Fibre'],
     ['/community', 'Community'],
     ['/compare', 'Compare'],
+    ['/contact', 'Get in touch'],
   ];
   return (
     <header className="siteHeader">
@@ -397,6 +431,74 @@ function HomePage({ areas, area, setArea, networks, reports, packages }) {
             <article><strong>{reports.length}</strong><span>community reports</span></article>
           </div>
         </div>
+      </section>
+
+      <section className="testimonialsSection pageWidth">
+
+        <div className="sectionSplit">
+          <div>
+            <p className="kicker">Demo community voices</p>
+            <h2>People want clarity, not more fibre confusion.</h2>
+          </div>
+
+          <p>
+            These are example user stories for the FibreFit hackathon prototype,
+            showing the kinds of connectivity decisions the platform is designed
+            to support.
+          </p>
+        </div>
+
+        <div className="testimonialGrid">
+
+          <article className="testimonialCard">
+            <span className="quoteMark">“</span>
+
+            <p>
+              I know what I pay every month, but I never really knew whether
+              50 Mbps was actually enough for my household. FibreFit makes
+              the comparison easier to understand.
+            </p>
+
+            <div>
+              <strong>Neo</strong>
+              <span>Tembisa · Demo user story</span>
+            </div>
+          </article>
+
+
+          <article className="testimonialCard featuredTestimonial">
+            <span className="quoteMark">“</span>
+
+            <p>
+              When my connection is slow, the first thing I want to know is
+              whether it is only happening to me. Seeing community reports
+              gives me useful context before I make a decision.
+            </p>
+
+            <div>
+              <strong>Ayanda</strong>
+              <span>Ivory Park · Demo user story</span>
+            </div>
+          </article>
+
+
+          <article className="testimonialCard">
+            <span className="quoteMark">“</span>
+
+            <p>
+              I do not want to open five provider websites just to compare
+              speed and price. I want one place that helps me understand
+              what actually fits my budget.
+            </p>
+
+            <div>
+              <strong>Kagiso</strong>
+              <span>Rabie Ridge · Demo user story</span>
+            </div>
+          </article>
+
+        </div>
+
       </section>
 
       <section className="homeClosing pageWidth">
@@ -573,6 +675,300 @@ function ReportPage({ area, setArea, areas, networks, isps, setReports }) {
   </main>;
 }
 
+function ContactPage({ area, areas }) {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [selectedArea, setSelectedArea] = useState(area);
+  const [category, setCategory] = useState('Complaint');
+  const [message, setMessage] = useState('');
+
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
+  const [sent, setSent] = useState(false);
+
+  async function submitContact(event) {
+    event.preventDefault();
+
+    setError('');
+
+    if (!email.trim() || !message.trim()) {
+      setError('Please enter your email address and message.');
+      return;
+    }
+
+    setSending(true);
+
+    try {
+      const response = await fetch(`${API}/contact`, {
+        method: 'POST',
+
+        headers: {
+          'Content-Type': 'application/json',
+        },
+
+        body: JSON.stringify({
+          name: name.trim() || null,
+          email: email.trim(),
+          area: selectedArea || null,
+          category,
+          message: message.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.detail || 'Could not send your message.',
+        );
+      }
+
+      setSent(true);
+
+    } catch (err) {
+      setError(
+        err.message ||
+        'Could not send your message. Please try again.',
+      );
+
+    } finally {
+      setSending(false);
+    }
+  }
+
+
+  if (sent) {
+    return (
+      <main className="page">
+
+        <section className="successPage pageWidth">
+
+          <div className="successIcon">
+            ✓
+          </div>
+
+          <p className="kicker">
+            Message received
+          </p>
+
+          <h1>
+            Thanks for getting in touch.
+          </h1>
+
+          <p>
+            Your message has been recorded by the FibreFit
+            hackathon prototype.
+          </p>
+
+          <div className="buttonRow">
+
+            <button
+              className="buttonPrimary"
+              onClick={() => go('/')}
+            >
+              Back home
+            </button>
+
+            <button
+              className="buttonOutline"
+              onClick={() => {
+                setSent(false);
+                setMessage('');
+              }}
+            >
+              Send another message
+            </button>
+
+          </div>
+
+        </section>
+
+      </main>
+    );
+  }
+
+
+  return (
+    <main className="page">
+
+      <PageHero
+        eyebrow="Get in touch"
+        title="Have something to tell us?"
+        copy="Send FibreFit feedback, a complaint, a data correction or a general question."
+      />
+
+
+      <section className="pageWidth contactLayout">
+
+        <form
+          className="contactFormSurface"
+          onSubmit={submitContact}
+        >
+
+          <div className="formGrid two">
+
+            <label className="stackLabel">
+              <span>Name (optional)</span>
+
+              <input
+                type="text"
+                value={name}
+                onChange={(event) =>
+                  setName(event.target.value)
+                }
+                placeholder="Your name"
+              />
+            </label>
+
+
+            <label className="stackLabel">
+              <span>Email address</span>
+
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(event) =>
+                  setEmail(event.target.value)
+                }
+                placeholder="you@example.com"
+              />
+            </label>
+
+
+            <label className="stackLabel">
+              <span>Area</span>
+
+              <select
+                value={selectedArea}
+                onChange={(event) =>
+                  setSelectedArea(event.target.value)
+                }
+              >
+                {areas.map((item) => (
+                  <option key={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+
+            <label className="stackLabel">
+              <span>What is this about?</span>
+
+              <select
+                value={category}
+                onChange={(event) =>
+                  setCategory(event.target.value)
+                }
+              >
+                <option>Complaint</option>
+                <option>Feedback</option>
+                <option>Incorrect fibre information</option>
+                <option>Partnership enquiry</option>
+                <option>Other</option>
+              </select>
+            </label>
+
+          </div>
+
+
+          <label className="stackLabel">
+            <span>Your message</span>
+
+            <textarea
+              required
+              value={message}
+              onChange={(event) =>
+                setMessage(event.target.value)
+              }
+              placeholder="Tell us what happened, what you noticed, or what you would like FibreFit to improve."
+            />
+          </label>
+
+
+          {error && (
+            <p className="formError">
+              {error}
+            </p>
+          )}
+
+
+          <button
+            className="buttonPrimary"
+            type="submit"
+            disabled={sending}
+          >
+            {sending
+              ? 'Sending…'
+              : 'Send message'}
+          </button>
+
+        </form>
+
+
+        <aside className="contactAside">
+
+          <p className="kicker">
+            Before you send
+          </p>
+
+          <h2>
+            Complaint or connectivity report?
+          </h2>
+
+          <p>
+            Use this page when you want to contact FibreFit
+            about the product, its information or your experience.
+          </p>
+
+          <div className="contactHelpCard">
+
+            <span>
+              Internet problem happening right now?
+            </span>
+
+            <strong>
+              Add a community report instead.
+            </strong>
+
+            <button
+              className="textLinkButton"
+              onClick={() => go('/report')}
+            >
+              Report connectivity issue →
+            </button>
+
+          </div>
+
+          <div className="contactHelpCard">
+
+            <span>
+              Want to understand your current package?
+            </span>
+
+            <strong>
+              Compare before deciding to switch.
+            </strong>
+
+            <button
+              className="textLinkButton"
+              onClick={() => go('/compare')}
+            >
+              Compare my fibre →
+            </button>
+
+          </div>
+
+        </aside>
+
+      </section>
+
+    </main>
+  );
+}
+
 function BotIcon({ size = 22 }) {
   return (
     <svg
@@ -689,7 +1085,90 @@ function AssistantPanel({ question, setQuestion, messages, asking, ask, clearCha
 }
 
 function Footer() {
-  return <footer className="siteFooter"><div className="pageWidth footerGrid"><div className="footerBrand"><button onClick={() => go('/')}>FibreFit</button><p>Find better fibre. Know when to switch.</p><small>Consumer-first connectivity decisions for South Africa.</small></div><div><h3>Explore</h3><button onClick={() => go('/find')}>Find Fibre</button><button onClick={() => go('/compare')}>Compare</button><button onClick={() => go('/community')}>Community</button><button onClick={() => go('/report')}>Report issue</button></div><div><h3>About this demo</h3><p>FibreFit is a hackathon prototype using curated package, coverage and community-report data.</p><p>It does not provide official outage declarations or live ISP coverage.</p></div></div><div className="footerBottom pageWidth"><span>© 2026 FibreFit</span><span>Find → Report → Compare → Switch smarter.</span></div></footer>;
+  return (
+    <footer className="siteFooter">
+
+      <div className="pageWidth footerGrid">
+
+        <div className="footerBrand">
+
+          <button onClick={() => go('/')}>
+            FibreFit
+          </button>
+
+          <p>
+            Find better fibre. Know when to switch.
+          </p>
+
+          <small>
+            Consumer-first connectivity decisions
+            for South Africa.
+          </small>
+
+        </div>
+
+
+        <div>
+
+          <h3>Explore</h3>
+
+          <button onClick={() => go('/find')}>
+            Find Fibre
+          </button>
+
+          <button onClick={() => go('/compare')}>
+            Compare
+          </button>
+
+          <button onClick={() => go('/community')}>
+            Community
+          </button>
+
+          <button onClick={() => go('/report')}>
+            Report issue
+          </button>
+
+          <button onClick={() => go('/contact')}>
+            Get in touch
+          </button>
+
+        </div>
+
+
+        <div>
+
+          <h3>About this demo</h3>
+
+          <p>
+            FibreFit is a hackathon prototype using
+            curated package, coverage and
+            community-report data.
+          </p>
+
+          <p>
+            It does not provide official outage
+            declarations or live ISP coverage.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div className="footerBottom pageWidth">
+
+        <span>
+          © 2026 FibreFit
+        </span>
+
+        <span>
+          Find → Report → Compare → Switch smarter.
+        </span>
+
+      </div>
+
+    </footer>
+  );
 }
 
 createRoot(document.getElementById('root')).render(<App />);

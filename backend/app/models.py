@@ -45,6 +45,14 @@ class ReportCreate(BaseModel):
     note: Optional[str] = None
 
 
+class ContactCreate(BaseModel):
+    name: Optional[str] = None
+    email: str = Field(min_length=5, max_length=200)
+    area: Optional[str] = None
+    category: str = Field(min_length=2, max_length=100)
+    message: str = Field(min_length=3, max_length=3000)
+
+
 class AssistantRequest(BaseModel):
     question: str
     context: dict
