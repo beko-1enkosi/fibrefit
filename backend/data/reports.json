@@ -1,7 +1,7 @@
 [
   {
     "id": "report-1",
-    "area": "Midrand",
+    "area": "Tembisa",
     "issue_type": "Slow internet",
     "network": "Vuma",
     "isp": "Afrihost",
@@ -10,7 +10,7 @@
   },
   {
     "id": "report-2",
-    "area": "Midrand",
+    "area": "Tembisa",
     "issue_type": "No internet",
     "network": "Openserve",
     "isp": null,
@@ -28,7 +28,7 @@
   },
   {
     "id": "report-4",
-    "area": "Midrand",
+    "area": "Tembisa",
     "issue_type": "Slow internet",
     "network": null,
     "isp": null,

@@ -1,7 +1,40 @@
 [
-  {"id":"mid-1","area":"Midrand","network":"Vuma","isp":"Afrihost","download_mbps":100,"upload_mbps":100,"price":749,"contract":"Month-to-month","reliability":90,"ideal_for":["streaming","remote work","gaming"]},
-  {"id":"mid-2","area":"Midrand","network":"Openserve","isp":"Webafrica","download_mbps":50,"upload_mbps":25,"price":599,"contract":"Month-to-month","reliability":84,"ideal_for":["studying","browsing","streaming"]},
-  {"id":"mid-3","area":"Midrand","network":"MetroFibre","isp":"Cool Ideas","download_mbps":200,"upload_mbps":200,"price":899,"contract":"Month-to-month","reliability":92,"ideal_for":["gaming","remote work","streaming"]},
+  {
+    "id": "tembisa-1",
+    "area": "Tembisa",
+    "network": "Vuma",
+    "isp": "Afrihost",
+    "download_mbps": 100,
+    "upload_mbps": 100,
+    "price": 749,
+    "contract": "Month-to-month",
+    "reliability": 90,
+    "ideal_for": ["streaming", "remote work", "gaming"]
+  },
+  {
+    "id": "tembisa-2",
+    "area": "Tembisa",
+    "network": "Openserve",
+    "isp": "Webafrica",
+    "download_mbps": 50,
+    "upload_mbps": 25,
+    "price": 599,
+    "contract": "Month-to-month",
+    "reliability": 84,
+    "ideal_for": ["studying", "browsing", "streaming"]
+  },
+  {
+    "id": "tembisa-3",
+    "area": "Tembisa",
+    "network": "MetroFibre",
+    "isp": "Cool Ideas",
+    "download_mbps": 200,
+    "upload_mbps": 200,
+    "price": 899,
+    "contract": "Month-to-month",
+    "reliability": 92,
+    "ideal_for": ["gaming", "remote work", "streaming"]
+  },
   {"id":"sand-1","area":"Sandton","network":"Vuma","isp":"Afrihost","download_mbps":100,"upload_mbps":100,"price":779,"contract":"Month-to-month","reliability":89,"ideal_for":["streaming","remote work"]},
   {"id":"sand-2","area":"Sandton","network":"Openserve","isp":"Axxess","download_mbps":50,"upload_mbps":25,"price":629,"contract":"Month-to-month","reliability":85,"ideal_for":["studying","browsing"]},
   {"id":"sand-3","area":"Sandton","network":"Frogfoot","isp":"Cool Ideas","download_mbps":250,"upload_mbps":250,"price":999,"contract":"Month-to-month","reliability":93,"ideal_for":["gaming","streaming","remote work"]},
